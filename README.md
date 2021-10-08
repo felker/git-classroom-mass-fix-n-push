@@ -1,5 +1,7 @@
 # Github Classroom Fix 'n Push
 
+KGF: https://github.com/education/classroom-assistant/issues/103
+
 A little script to automatically push a directory full of Github Classroom feedback back to Github.
 
 Specifically it goes into each repository, [changes the remote URL to the original version](https://github.com/education/classroom-assistant/issues/103#issuecomment-570954993) instead of the token, adds and commits everything, pulls any changes and then pushes all changes back to github, and then moves onto the next repository.
