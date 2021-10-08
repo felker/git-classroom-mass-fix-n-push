@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+for D in */
+do
+    echo "$D"
+    cd "$D"
+    for D2 in */
+    do
+	echo "$D2"
+	cd "$D2"
+	cd ..
+    done
+    cd ..
+done
+
+set +e

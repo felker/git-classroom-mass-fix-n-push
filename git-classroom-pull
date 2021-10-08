@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+# KGF: should probably replace this simple glob with more robust "find" alternative
+# to get all directories, not special dirs e.g. "../", "./". Maybe print out all subdirs
+# in a HW parent folder for user confirmation?
+for D in */
+do
+    echo "$D"
+    cd "$D"
+    for D2 in */
+    do
+	echo "$D2"
+	cd "$D2"
+	# KGF: what happens if you run this twice? does it mess up the remote URL?
+	git remote set-url origin $(git remote -v | head -n 1 | grep -o 'github\.com.*git' | awk '{print "https://"$1}')
+	git pull
+	cd ..
+	echo "~~ Updated $D/$D2 repo: modified git remote and pulled ~~"
+    done
+    cd ..
+    echo "~~ Updated all repos in $D ~~"
+done
+
+set +e
