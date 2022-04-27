@@ -1,4 +1,9 @@
 #!/bin/bash
+# Convert GitHub Classroom Assistant temporary token-based HTTPs URL remote
+# to standard HTTPs remote. From:
+# https://x-access-token:TOKENID@github.com/mpcs51087/project-1-studentname.git
+# to:
+# https://github.com/mpcs51087/project-1-studentname.git/
 
 set -e
 
@@ -11,10 +16,18 @@ do
     cd "$D"
     for D2 in */
     do
+	if [[ $D2 == *"donotpull"*]]; then
+	    echo "Skipping $D2"
+	    continue
+	fi
 	echo "$D2"
 	cd "$D2"
 	# KGF: what happens if you run this twice? does it mess up the remote URL?
+	# No. Idempotency for valid HTTPS remote URLs (standard or token based)
 	git remote set-url origin $(git remote -v | head -n 1 | grep -o 'github\.com.*git' | awk '{print "https://"$1}')
+	# KGF: if you copy in a repo that has an SSH URL remote, it will break the URL
+	# E.g. converts git@github.com:mpcs51087/project-1-studentname.git  ---->
+	# https://github.com:mpcs51087/project-1-studentname.git/ (that second colon shouild be a slash)
 	git pull
 	cd ..
 	echo "~~ Updated $D/$D2 repo: modified git remote and pulled ~~"
