@@ -109,11 +109,23 @@ password=<HIDDEN>
 username=felker
 ```
 
-
 https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage
 > The default is not to cache at all. Every connection will prompt you for your username and password.
 
 > If you’re using a Mac, Git comes with an “osxkeychain” mode, which caches credentials in the secure keychain that’s attached to your system account. This method stores the credentials on disk, and they never expire, but they’re encrypted with the same system that stores HTTPS certificates and Safari auto-fills.
+
+## Refresher: SSH Agent on macOS
+
+There is no need to manually start or connect to `ssh-agent` for each shell session in my `~/.zshrc` on macOS, since I am using `AddKeysToAgent yes` in SSH config file. Furthermore, I do not need to manually re-enter the passphrase even after rebooting, since macOS's fork of OpenSSH repurposes `-K` option of `ssh-add` to integrate with "Keychain Access.app" for caching the passphrase, and adds config file support for the `UseKeychain` option for this purpose. 
+
+https://developer.apple.com/library/archive/technotes/tn2449/_index.html
+> Prior to macOS Sierra, ssh would present a dialog asking for your passphrase and would offer the option to store it into the keychain. This UI was deprecated some time ago and has been removed.
+> 
+> Instead, a new UseKeychain option was introduced in macOS Sierra allowing users to specify whether they would like for the passphrase to be stored in the keychain. This option was enabled by default on macOS Sierra, which caused all passphrases to be stored in the keychain.
+
+> This was not the intended default behavior, so this has been changed in macOS 10.12.2.
+
+## Aside: `git clone` verbosity
 
 As an aside, this is how you get verbose output from a `git clone`:
 ```
