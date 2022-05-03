@@ -71,15 +71,44 @@ https://stackoverflow.com/questions/71595598/x-access-token-vs-a-githib-access-t
 
 https://docs.github.com/en/get-started/getting-started-with-git/updating-credentials-from-the-macos-keychain
 
-Recall, Git is setup to use macOS Keychain to cache a GitHub Personal Access Token with no expiration. However, not sure where it is configured to do so:
+Recall, Git is setup to use macOS Keychain to cache a GitHub Personal Access Token with no expiration for HTTP/s URLs: 
 ```
+> git config --local credential.helper 
+(returns nothing)
 > git config --global credential.helper 
 (returns nothing)
-> git credential-osxkeychain get
-(hangs)
+> git config --system credential.helper 
+osxkeychain
+```
+
+The actual standalone binary is not in my `$PATH`:
+```
 > find /usr/local/Cellar/git/2.36.0 -name git-credential-osxkeychain
 /usr/local/Cellar/git/2.36.0/libexec/git-core/git-credential-osxkeychain
+> git credential-osxkeychain get
+(hangs)
 ```
+The command hangs because it is not meant to be a user-facing tool, but rather used internally by Git itself. Takes subcommands `<get|store|erase>` and waits for input on stdin. See:
+- https://superuser.com/questions/1565313/git-credential-osxkeychain-get-hangs
+- https://docs.github.com/en/get-started/getting-started-with-git/updating-credentials-from-the-macos-keychain#deleting-your-credentials-via-the-command-line
+- Dates back to 2011 and has very simple code: https://stackoverflow.com/questions/51294589/why-is-there-no-documentation-anywhere-for-git-credential-osxkeychain
+  - https://github.com/git/git/commit/34961d30dae69b00a8a5aabd568fb87f376ebb87
+  
+> Exactly: any credential helper (osxkeychain or otherwise) would apply only for HTTPS URLs, not SSH. And SSH needs a cache only if the private key is passphrase-protected (in which case an ssh agent is needed).
+
+
+```
+> git credential-osxkeychain get<ENTER>
+host=github.com<ENTER>
+protocol=https<ENTER>
+<ENTER>
+```
+Returns
+```
+password=<HIDDEN>
+username=felker
+```
+
 
 https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage
 > The default is not to cache at all. Every connection will prompt you for your username and password.
